@@ -1,0 +1,129 @@
+
+			YOUTUBE DASHBOARD WITH MERN AND STYLED COMPONENTS
+
+Source 01: https://www.youtube.com/watch?v=yIaXoop8gl4&ab_channel=LamaDev
+
+Empiezo creando una app con yarn + vite en TS.La instalo el router y la lib de styles:
+>yarn add styled-components react-router-dom
+
+Para los iconos usaremos los icons de material v5:
+>yarn add @mui/icons-material
+
+Ojo que tmb pide instalar el core:
+>yarn add @mui/material @emotion/react @emotion/styled
+
+NOTA: recuerda que para usar varios themes tengo que usar el HOC <ThemeProvider> que requiere la prop theme:
+
+import styled, { ThemeProvider } from "styled-components";
+import { darkTheme } from "./utils/Theme";
+
+export const App = () => {
+  return (
+    <ThemeProvider theme={darkTheme}>
+      <Container>
+        <Menu />
+        <Main>
+          <Navbar />
+          <Wrapper>Video cards</Wrapper>
+        </Main>
+      </Container>
+    </ThemeProvider>
+  );
+};
+
+Realmente hay mucha libertad aqui,ese objeto darkTheme puedo llamar a las propiedades como quiera:
+
+export const darkTheme = {
+  bg:"#181818",
+  bgLighter: "#202020",
+  text:"white",
+  textSoft:"#aaaaaa",
+  soft:"#373737"
+}
+
+export const lightTheme = {
+  bg:"#f9f9f9",
+  bgLighter: "white",
+  text:"black",
+  textSoft:"#606060",
+  soft:"#f5f5f5"
+}
+
+Despues solo hay que usar ${ ({theme}) => theme.bg } como valor:
+
+const Container = styled.div`
+  flex: 1;
+  background-color: ${ ({theme}) => theme.bg};
+  height: 100vh;
+  color: white;
+  font-size: 14px;
+  position: sticky;
+  /* cualquier cosa en position sticky + top 0 va a estar en top 0 siempre,no necesita más */
+  top: 0;
+`;
+
+Desde luego esta libreria parece bastante buena,habria que verla en un ambiente de producción si no se complica mucho mezclar el CSS con el JSX y el TS.
+
+Otro tip importante,puedo usar un posicionamiento absoluto sobre algo y despues un margin auto:
+
+const Wrapper = styled.div`
+  position:absolute;
+  left:0;
+  right:0;
+  margin:auto;
+  width: 50%;
+`;
+
+Memoriza el uso de height:max-content y como usar props en TS + styled:
+interface CmpProps{
+  type: "sm" | "md";
+}
+const Cmp: React.FC<CmpProps> = () => {}
+
+const Container = styled.div<CmpProps>`
+  color: ${(p) => p.type === "sm" ? "red": "black"};
+`;
+ despues en el JSX:
+
+<Container type={type} />
+
+
+IMPORTANTE: fijate como MongoDB tiene unos métodos increibles,como $addToSet o $pull
+
+export const like = async (req: Request, res: Response, next: NextFunction) => {
+  const id = req.user?.id;
+  const videoId = req.params.videoId;
+  try {
+    await Video.findByIdAndUpdate(videoId, {
+      $addToSet: { likes: id },
+      $pull: { dislikes: id },
+    });
+    res.status(200).json("The video has been liked.");
+  } catch (error) {
+    next(error);
+  }
+};
+Aunque no pasa por el 0( va del 1 a -1).
+
+Recuerda hacer la red social tmb(aparte del ecommerce) y que tengo una forma muy gorgeous de crear el routing en React en la app de react-query de devTalles
+NOTA: fijate que es muy importante donde se creen los componentes al usar styled components.Parece que no conviven bien con estados locales(investigar más).
+IMPORTANTE:queda certificado que los styled components van siempre afuera y arriba para no redeclararlos/reasignarlos.Muy asinta esta libreria.
+
+IMPORTANTE: fijate que cada vez que se hace un refresh se pierden los datos del store.Esto es muy importante,falta la parte de persistir/rehidratar el store:
+https://redux-toolkit.js.org/rtk-query/usage/persistence-and-rehydration#redux-persist
+
+HINT: fijate que ya desde RTK no recomiendan persistir en el store la data,ya que termina siendo muy stale.En su lugar recomiendan la caché del navegador o los headers de las peticiones.
+
+NOTA: para persistir tengo que usar una tercera libreria(redux-persist)
+>yarn add redux-persist
+No tiene mucho,ver archivo store.ts(fijate que también hay que añadir algo al index.js(el PersistGate con el persistor))
+Fijate que importante es no dejar la configurancion de app.use(cors()) asi,pues no ve al frontend y no le manda la cookie.
+
+2h 16m AUTH CON GOOGLE
+
+Voy a firebase(https://firebase.google.com/?hl=es) y creo un nuevo proyecto.Deshabilito las analytics y habilito la authentication y eligo el provider Google.Ahora hay que instalar la libreria:
+>yarn add firebase
+Despues inicializo una app web en ese proyecto en firebase y me copio la config.
+
+Habilitamos también el módulo Storage de Firebase(en modo prueba).Copiamos toda la función que provee Lama.
+3h20m
