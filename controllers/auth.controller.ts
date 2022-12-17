@@ -31,6 +31,7 @@ export const signin = async (req: Request, res: Response, next: NextFunction) =>
     // lo metemos en una cookie(requiere de la lib cookie-parser)
     return res
       .cookie("access_token", token, {
+        httpOnly: true,
         expires: new Date(Date.now() + 9000000),
       })
       .status(200)
@@ -48,6 +49,7 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: "1d" });
       return res
         .cookie("access_token", token, {
+          httpOnly: true,
           expires: new Date(Date.now() + 9000000),
         })
         .status(200)
@@ -62,6 +64,7 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
       const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET!, { expiresIn: "1d" });
       return res
         .cookie("access_token", token, {
+          httpOnly: true,
           expires: new Date(Date.now() + 9000000),
         })
         .status(200)

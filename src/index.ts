@@ -16,7 +16,7 @@ app.use(
   cors({
     // terriblemente importante setear el origin y las credentials
     // origin: "http://localhost:5173", 
-    origin: true, // a true acepta todo
+    origin: "https://yt-clone-mern.netlify.app", // a true acepta todo
     credentials: true,
   }),
 );
